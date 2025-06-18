@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LockSentry Core Module Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    ul { margin-top: 0; }
+    section { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+
+  <h1>Core Module User Guide</h1>
+
+  <section>
+    <h2>Overview</h2>
+    <p>The <strong>Core</strong> module provides utility functions that enhance output formatting and enable centralized, reusable configuration loading across LockSentry scripts. It is a foundational module that should be imported in nearly every script in the project.</p>
+  </section>
+
+  <section>
+    <h2>Functions</h2>
+
+    <h3>1. <code>Write-Box</code></h3>
+    <p>Displays stylized console messages with optional borders, alignment, padding, and color. Primarily used to enhance script readability in CLI environments.</p>
+
+    <h4>Parameters</h4>
+    <ul>
+      <li><code>Text</code> (string, required): Message to display</li>
+      <li><code>PaddingLeft</code>, <code>PaddingRight</code> (int): Inner space on left/right of the text</li>
+      <li><code>PaddingTop</code>, <code>PaddingBottom</code> (int): Adds blank lines above/below text inside the box</li>
+      <li><code>Width</code> (int): Total width of the output box. Auto-expands to fit content</li>
+      <li><code>Align</code> (enum): Alignment of text. Options: <code>Left</code>, <code>Center</code>, <code>Right</code></li>
+      <li><code>TextColor</code> (ConsoleColor): Foreground color of text</li>
+      <li><code>BorderColor</code> (ConsoleColor): Color of the box border</li>
+      <li><code>BorderChar</code> (string): Character used for box border (e.g., <code>=</code>, <code>*</code>)</li>
+      <li><code>NoBorder</code> (switch): If set, disables the border entirely</li>
+      <li><code>BlankLinesBefore</code>, <code>BlankLinesAfter</code> (int): Blank lines printed before or after the box</li>
+    </ul>
+
+    <h4>Examples</h4>
+    <pre>Write-Box -Text "Task Complete" -TextColor Green -Align Center -Width 40</pre>
+    <pre>Write-Box -Text "Error" -TextColor Red -BorderChar "!" -Align Left</pre>
+
+    <h3>2. <code>Get-Config</code></h3>
+    <p>Loads and parses a JSON configuration file and returns its contents as a PowerShell object.</p>
+
+    <h4>Parameters</h4>
+    <ul>
+      <li><code>Path</code> (string, required): Full path to the JSON file</li>
+    </ul>
+
+    <h4>Example</h4>
+    <pre>$config = Get-Config -Path "$PSScriptRoot\Config\dev\RunPlan.json"</pre>
+  </section>
+
+  <section>
+    <h2>Usage Context</h2>
+    <p>This module is used in almost all operational scripts within LockSentry, including:</p>
+    <ul>
+      <li><code>Manage-SmbFiles.ps1</code></li>
+      <li><code>Manage-SmbSessions.ps1</code></li>
+      <li><code>LockSentry-RunPlan.ps1</code></li>
+    </ul>
+    <p>Functions like <code>Write-Box</code> are used to display banners or step messages, while <code>Get-Config</code> ensures consistent JSON parsing across all scripts.</p>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Import this module early in scripts using <code>Import-Module LockSentry.Core -Force -DisableNameChecking</code></li>
+      <li>Use <code>Write-Box</code> for status messages, step markers, and important outputs</li>
+      <li>Use <code>Get-Config</code> to load any JSON config file, including LogCleanup.json, SmbFiles.json, etc.</li>
+      <li>Do not modify this module outside of the main utility set—it should remain stable and global</li>
+    </ul>
+  </section>
+
+</body>
+</html>

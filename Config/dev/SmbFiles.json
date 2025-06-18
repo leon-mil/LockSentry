@@ -1,0 +1,26 @@
+{
+    "DirectoriesToScan": [
+      "D:\\CPRS\\DEV\\LIST",
+      "D:\\CPRS\\DEV\\DATA",
+      "D:\\CPRS\\DEV\\LOGS\\SASLOGS",
+      "D:\\CPRS\\DEV\\DATA\\CEDATA\\CEINVENT"
+    ],
+    "Mode": "Targets",
+    "CloseHandles": false,
+    "IncludeUsers": [
+      "mil00001",
+      "mil00001Adm",
+      "zhang312",
+      "owock001",
+      "halla001"
+    ],
+    "ExcludeUsers": [],
+    "EnableLog": true,
+    "LogDirectory": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs",
+    "UseTimestamp": true,
+    "TimestampResolution": "millisecond",
+    "AppendToExisting": false,
+    "ShowSummary": false,
+    "ShowTargetDirs": true
+  }
+  

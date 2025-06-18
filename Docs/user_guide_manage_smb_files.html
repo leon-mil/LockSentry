@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage-SmbFiles.ps1 Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2rem; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+  <h1>LockSentry - Manage-SmbFiles.ps1 Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p><strong>Manage-SmbFiles.ps1</strong> automates the process of scanning for and optionally closing open SMB file handles. It uses a centralized configuration file and calls into the <code>LockSentry.SmbFileManager</code> module to perform core logic.</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>Run the script from PowerShell:</p>
+    <pre>.\Manage-SmbFiles.ps1</pre>
+    <p>This defaults to using the <code>dev</code> environment. For production:</p>
+    <pre>.\Manage-SmbFiles.ps1 -EnvName prod</pre>
+  </section>
+
+  <section>
+    <h2>What It Does</h2>
+    <ul>
+      <li>Imports required modules: Core, LogManager, SmbFileManager</li>
+      <li>Loads the appropriate config file: <code>Config\&lt;EnvName&gt;\SmbFiles.json</code></li>
+      <li>Initializes logging if enabled</li>
+      <li>Runs <code>Invoke-SmbFileProcess</code> with the loaded configuration</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuration Reference (SmbFiles.json)</h2>
+    <pre>{
+  "DirectoriesToScan": ["D:\\CPRS\\DEV\\DATA"],
+  "Mode": "Targets",
+  "CloseHandles": true,
+  "IncludeUsers": ["mil00001"],
+  "ExcludeUsers": [],
+  "EnableLog": true,
+  "LogDirectory": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs",
+  "UseTimestamp": true,
+  "TimestampResolution": "millisecond",
+  "AppendToExisting": false,
+  "ShowSummary": false,
+  "ShowTargetDirs": true
+}</pre>
+    <ul>
+      <li><code>DirectoriesToScan</code>: Root paths for filtering open handles.</li>
+      <li><code>Mode</code>: One of <code>All</code>, <code>Targets</code>, or <code>ScanOnly</code>.</li>
+      <li><code>CloseHandles</code>: Whether to attempt to close detected handles.</li>
+      <li><code>IncludeUsers</code>: If Mode is <code>Targets</code>, users to include.</li>
+      <li><code>ExcludeUsers</code>: Optional users to ignore from closure.</li>
+      <li><code>EnableLog</code>: If true, logs actions using PSFramework.</li>
+      <li><code>LogDirectory</code>: Where logs should be saved.</li>
+      <li><code>UseTimestamp</code>: If true, appends datetime to log file name.</li>
+      <li><code>TimestampResolution</code>: <code>second</code> or <code>millisecond</code>.</li>
+      <li><code>AppendToExisting</code>: If false, overwrites log on new run.</li>
+      <li><code>ShowSummary</code>: Whether to print configuration summary.</li>
+      <li><code>ShowTargetDirs</code>: Whether to display scan directories.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Execution Flow</h2>
+    <ol>
+      <li>Resolves <code>SmbFiles.json</code> based on <code>-EnvName</code></li>
+      <li>Initializes logging if <code>EnableLog</code> is true</li>
+      <li>Calls <code>Invoke-SmbFileProcess</code> with the loaded config</li>
+      <li>Scan results are printed and optionally logged</li>
+      <li>Handle closure occurs depending on <code>CloseHandles</code> and <code>Mode</code></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Use <code>ScanOnly</code> mode in dev to validate results before closing.</li>
+      <li>Ensure logs are stored in a persistent location if running in scheduled mode.</li>
+      <li>Use the <code>IncludeUsers</code> and <code>ExcludeUsers</code> filters carefully to avoid terminating legitimate locks.</li>
+    </ul>
+  </section>
+
+</body>
+</html>

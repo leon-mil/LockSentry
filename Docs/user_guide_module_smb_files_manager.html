@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmbFileManager Module Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2rem; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>LockSentry - SmbFileManager Module Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p>The <strong>SmbFileManager</strong> module scans for locked SMB file handles and optionally closes them. It logs session data and filters actions based on configuration flags and user filters.</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <pre>Invoke-SmbFileProcess -ConfigFile ".\Config\dev\SmbFiles.json"</pre>
+    <p>This triggers the following:</p>
+    <ul>
+      <li>Loads the specified JSON configuration</li>
+      <li>Displays config summary and target directories (if enabled)</li>
+      <li>Scans for open file handles via <code>Get-SmbOpenFile</code></li>
+      <li>Optionally closes them using <code>Close-SmbOpenFile</code></li>
+      <li>Logs each action to console and/or log file</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Exported Functions</h2>
+    <ul>
+      <li><code>Get-SmbOpenHandles</code>: Scans and returns all locked SMB handles matching configured paths.</li>
+      <li><code>Show-FileLockSummary</code>: Visually prints the current configuration state and active settings.</li>
+      <li><code>Format-And-Log</code>: Displays remaining open handles in table format and logs the output.</li>
+      <li><code>AutoCloseAllLocks</code>: Closes all detected file handles unconditionally.</li>
+      <li><code>AutoCloseTargetLocks</code>: Closes only matching handles based on user inclusion/exclusion filters.</li>
+      <li><code>Invoke-SmbFileProcess</code>: Main function to coordinate scanning, reporting, and cleanup.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuration Reference</h2>
+    <p>Example <code>SmbFiles.json</code>:</p>
+    <pre>{
+  "DirectoriesToScan": [
+    "D:\\CPRS\\DEV\\LIST",
+    "D:\\CPRS\\DEV\\DATA",
+    "D:\\CPRS\\DEV\\LOGS\\SASLOGS",
+    "D:\\CPRS\\DEV\\DATA\\CEDATA\\CEINVENT"
+  ],
+  "Mode": "Targets",
+  "CloseHandles": false,
+  "IncludeUsers": ["mil00001", "mil00001Adm", "zhang312", "owock001", "halla001"],
+  "ExcludeUsers": [],
+  "EnableLog": true,
+  "LogDirectory": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs",
+  "UseTimestamp": true,
+  "TimestampResolution": "millisecond",
+  "AppendToExisting": false,
+  "ShowSummary": false,
+  "ShowTargetDirs": true
+}</pre>
+
+    <p><strong>Config Keys:</strong></p>
+    <ul>
+      <li><code>DirectoriesToScan</code>: Root directories to evaluate for locked handles.</li>
+      <li><code>Mode</code>: Determines session behavior:
+        <ul>
+          <li><code>All</code>: Close all handles</li>
+          <li><code>Targets</code>: Close filtered handles by user list</li>
+          <li><code>ScanOnly</code>: Report without closing anything</li>
+        </ul>
+      </li>
+      <li><code>CloseHandles</code>: Enables/disables the handle closure phase.</li>
+      <li><code>IncludeUsers</code>: Usernames to be targeted for closure (leave empty to include all).</li>
+      <li><code>ExcludeUsers</code>: Users to skip even if matched by other filters.</li>
+      <li><code>EnableLog</code>: If true, actions are logged to disk using Write-Log.</li>
+      <li><code>LogDirectory</code>: Folder to store logs.</li>
+      <li><code>UseTimestamp</code>: Adds timestamp suffix to log file name.</li>
+      <li><code>TimestampResolution</code>: Accepts <code>second</code> or <code>millisecond</code>.</li>
+      <li><code>AppendToExisting</code>: Appends to previous log file instead of overwriting.</li>
+      <li><code>ShowSummary</code>: Prints a detailed config table using <code>Show-FileLockSummary</code>.</li>
+      <li><code>ShowTargetDirs</code>: Prints each directory being scanned before execution.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Use <code>ScanOnly</code> mode before enabling full handle closure to validate matches.</li>
+      <li>Ensure <code>LogDirectory</code> exists or is creatable by the script.</li>
+      <li>Keep <code>IncludeUsers</code> and <code>ExcludeUsers</code> lists clean and non-overlapping.</li>
+      <li>Enable <code>UseTimestamp</code> to avoid log file collisions.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where It's Used</h2>
+    <ul>
+      <li><code>Manage-SmbFiles.ps1</code>: Directly invokes <code>Invoke-SmbFileProcess</code></li>
+      <li><code>LockSentry-RunPlan.ps1</code>: Integrates this module in full LockSentry automation</li>
+    </ul>
+  </section>
+
+</body>
+</html>

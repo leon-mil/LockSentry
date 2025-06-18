@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Manager Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; white-space: pre-wrap; }
+    section { margin-bottom: 2rem; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>LockSentry - Manage-Modules.ps1 Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p>The <strong>Manage-Modules.ps1</strong> script installs, lists, or removes LockSentry PowerShell modules defined in <code>Modules.json</code> for a selected environment (<code>dev</code> or <code>prod</code>).</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>Install all modules for <code>dev</code>: <code>./Manage-Modules.ps1 -Environment dev -Install</code></p>
+    <p>Other examples: <code>./Manage-Modules.ps1 -Environment dev -List</code> (list versions), <code>./Manage-Modules.ps1 -Environment prod -Remove</code> (remove all versions)</p>
+  </section>
+
+  <section>
+    <h2>Configuration Reference</h2>
+    <p>Example structure for <code>Modules.json</code>:</p>
+    <pre>{
+  "DestinationRoot": "C:\\Program Files\\WindowsPowerShell\\Modules",
+  "AlwaysReinstall": true,
+  "ShowOutput": true,
+  "Modules": [
+    { "Name": "LockSentry.Core", "SourcePath": "Modules\\Core" },
+    { "Name": "LockSentry.LogManager", "SourcePath": "Modules\\LogManager" },
+    { "Name": "LockSentry.SmbFileManager", "SourcePath": "Modules\\SmbFileManager" },
+    { "Name": "LockSentry.SmbSessionManager", "SourcePath": "Modules\\SmbSessionManager" }
+  ]
+}</pre>
+    <p><strong>Config Keys:</strong></p>
+    <ul>
+      <li><code>DestinationRoot</code>: Root path to install modules. Default is the global PowerShell modules directory.</li>
+      <li><code>AlwaysReinstall</code>: If true, reinstalls all modules even if they exist.</li>
+      <li><code>ShowOutput</code>: Reserved for future output verbosity control.</li>
+      <li><code>Modules</code>: Array of modules with <code>Name</code> and <code>SourcePath</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Behavior</h2>
+    <ul>
+      <li><strong>Install</strong>: Reads manifest <code>.psd1</code>, resolves version, installs into <code>&lt;DestinationRoot&gt;\&lt;Name&gt;\&lt;Version&gt;</code>, and renames manifest.</li>
+      <li><strong>List</strong>: Displays installed versions of each configured module.</li>
+      <li><strong>Remove</strong>: Deletes all installed versions of each configured module.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Run with Administrator privileges.</li>
+      <li>Ensure <code>Modules.json</code> paths and names are accurate.</li>
+      <li>Use <code>-List</code> often to verify module installation state.</li>
+      <li>Maintain parity across <code>dev</code> and <code>prod</code> environments for consistency.</li>
+    </ul>
+  </section>
+
+</body>
+</html>

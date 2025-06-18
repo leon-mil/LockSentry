@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clean-Logs.ps1 User Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2rem; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>LockSentry - Clean-Logs.ps1 Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p><strong>Clean-Logs.ps1</strong> is used to manage log file retention in LockSentry environments by archiving or deleting logs based on time-based rules or explicit user-supplied options. It ensures disk usage is kept under control while preserving historical data in an organized archive.</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>Basic usage example:</p>
+    <pre>.\Clean-Logs.ps1 -Environment dev</pre>
+    <p>Optional flags can be used to override default behavior:</p>
+    <ul>
+      <li><code>-ArchiveAll</code>: Moves all logs into timestamped archive folders</li>
+      <li><code>-PurgeLogs</code>: Deletes all logs from the active log folder</li>
+      <li><code>-PurgeArchive</code>: Deletes all files in archive folder</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuration Reference</h2>
+    <p>Sample <code>LogCleanup.json</code> structure:</p>
+    <pre>{
+  "LogFolder": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs",
+  "ArchiveFolder": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs\\Archive",
+  "EnableCleanup": true,
+  "FilePatterns": ["*.txt", "*.log"],
+  "ArchiveAfter": "0:0:0:1",
+  "DeleteAfter": "0:0:0:10"
+}</pre>
+
+    <p><strong>Configuration Keys Explained:</strong></p>
+    <ul>
+      <li><code>LogFolder</code>: The directory containing active logs to process.</li>
+      <li><code>ArchiveFolder</code>: Destination where older logs are moved and organized by month.</li>
+      <li><code>EnableCleanup</code>: If <code>false</code>, no action will be taken. Ensures safety toggle.</li>
+      <li><code>FilePatterns</code>: Glob patterns to match log files (e.g. <code>*.log</code>).</li>
+      <li><code>ArchiveAfter</code>: Time span format (days:hours:minutes:seconds). Files older than this will be archived. <br>e.g. <code>0:0:0:1</code> = archive anything older than 1 second.</li>
+      <li><code>DeleteAfter</code>: Time span format. Files older than this will be deleted from <em>both</em> active and archive folders. <br>e.g. <code>0:0:0:10</code> = delete anything older than 10 seconds.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Use <code>ArchiveAfter</code> to preserve recent logs and move older ones to organized folders.</li>
+      <li>Run with <code>-PurgeLogs</code> to fully reset active logs in dev after test runs.</li>
+      <li>Set <code>DeleteAfter</code> cautiously to avoid accidental deletion of important historical data.</li>
+      <li>Ensure <code>EnableCleanup</code> is always true in production scheduled jobs.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where It's Used</h2>
+    <ul>
+      <li><code>LockSentry-RunPlan.ps1</code>: Invokes this script to clean logs after SMB session and file cleanup tasks.</li>
+      <li><code>Scheduled Task (optional)</code>: Can be run automatically on a schedule to maintain disk hygiene.</li>
+    </ul>
+  </section>
+
+</body>
+</html>

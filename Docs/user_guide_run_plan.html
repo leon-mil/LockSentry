@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LockSentry - Run Plan Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    ul { margin-top: 0.5em; }
+    section { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>LockSentry - Execution Plan (RunPlan) Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p>
+      <strong>LockSentry-RunPlan.ps1</strong> automates the sequence of LockSentry operations defined in a JSON-based plan file. It ensures each script is run the specified number of times, with proper module initialization, config handling, and logging.
+    </p>
+  </section>
+
+  <section>
+    <h2>Configuration File</h2>
+    <p><code>RunPlan.json</code> defines the sequence and repetition of scripts:</p>
+    <pre>{
+  "ExecutionPlan": [
+    { "Script": "Manage-SmbFiles.ps1", "Times": 1 },
+    { "Script": "Manage-SmbSessions.ps1", "Times": 1 },
+    { "Script": "Manage-SmbFiles.ps1", "Times": 1 },
+    { "Script": "Manage-SmbSessions.ps1", "Times": 1 }
+  ]
+}</pre>
+
+    <p><strong>Keys:</strong></p>
+    <ul>
+      <li><code>Script</code>: The script name to run (only valid options: <code>Manage-SmbFiles.ps1</code>, <code>Manage-SmbSessions.ps1</code>)</li>
+      <li><code>Times</code>: Number of times to execute that step in sequence.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Environment Detection</h2>
+    <ul>
+      <li><code>LockSentry-RunPlan.ps1</code> reads the active environment (<code>dev</code> or <code>prod</code>) from <code>Config\Environment.json</code>.</li>
+      <li>Overrides can be passed using <code>-EnvConfigFile</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Workflow</h2>
+    <p>For each step in the execution plan, the script will:</p>
+    <ol>
+      <li>Display a status banner with script name and iteration count.</li>
+      <li>Import the appropriate LockSentry module.</li>
+      <li>Load the corresponding environment-specific config (e.g., <code>SmbFiles.json</code>, <code>SmbSessions.json</code>).</li>
+      <li>Initialize logging if enabled and not already running.</li>
+      <li>Invoke <code>Invoke-SmbFileProcess</code> or <code>Invoke-SmbSessionProcess</code> accordingly.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Log Cleanup and Module Installation</h2>
+    <ul>
+      <li>Before running any steps, the script calls <code>Clean-Logs.ps1</code> using <code>LogCleanup.json</code>.</li>
+      <li>Then installs or updates modules by calling <code>Manage-Modules.ps1 -Install</code> using <code>Modules.json</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Usage Examples</h2>
+    <pre>
+  . LockSentry-RunPlan.ps1  # Uses Config\Environment.json
+  . LockSentry-RunPlan.ps1 -EnvConfigFile "D:\Custom\Config\Environment.json"</pre>
+  </section>
+
+  <section>
+    <h2>Error Handling</h2>
+    <ul>
+      <li>If any referenced script in <code>RunPlan.json</code> is unknown, the script logs a warning and continues.</li>
+      <li>Missing configuration files for each step (e.g., <code>SmbFiles.json</code>) are also logged and skipped.</li>
+    </ul>
+  </section>
+</body>
+</html>

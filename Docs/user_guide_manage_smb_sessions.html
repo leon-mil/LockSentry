@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage-SmbSessions.ps1 Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2rem; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>LockSentry - Manage-SmbSessions.ps1 Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p>The <strong>Manage-SmbSessions.ps1</strong> script orchestrates discovery, reporting, and optional closure of active SMB sessions using the <code>SmbSessionManager</code> module. It loads environment-specific configuration, initializes logging, and invokes the session management workflow.</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>To run the session workflow in the default (<code>dev</code>) environment:</p>
+    <pre>.
+Manage-SmbSessions.ps1</pre>
+    <p>Other examples:</p>
+    <pre>.
+Manage-SmbSessions.ps1 -EnvName prod     # Use production SmbSessions.json</pre>
+  </section>
+
+  <section>
+    <h2>Workflow Summary</h2>
+    <ul>
+      <li>Loads environment config from <code>Config\&lt;EnvName&gt;\SmbSessions.json</code></li>
+      <li>Imports <code>Core</code>, <code>LogManager</code>, and <code>SmbSessionManager</code> modules</li>
+      <li>Initializes logging (if enabled in config)</li>
+      <li>Invokes <code>Invoke-SmbSessionProcess</code> with the loaded config</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuration Reference</h2>
+    <p><code>SmbSessions.json</code> must include:</p>
+    <ul>
+      <li><strong>DirectoriesToScan</strong>: Paths to check for locked SMB file handles</li>
+      <li><strong>Mode</strong>: One of <code>All</code>, <code>Targets</code>, <code>ScanOnly</code></li>
+      <li><strong>CloseSession</strong>: Whether to attempt session closure</li>
+      <li><strong>IncludeUsers</strong>: Users to target (optional)</li>
+      <li><strong>ExcludeUsers</strong>: Users to exclude (optional)</li>
+      <li><strong>EnableLog</strong>: Enables logging via <code>LogManager</code></li>
+      <li><strong>LogDirectory</strong>: Where to write logs</li>
+      <li><strong>UseTimestamp</strong>: Appends datetime to log filename</li>
+      <li><strong>TimestampResolution</strong>: <code>second</code> or <code>millisecond</code></li>
+      <li><strong>AppendToExisting</strong>: Whether to append to existing log or overwrite</li>
+      <li><strong>ShowConfigFile</strong>: Show config file path in console output</li>
+      <li><strong>ShowSummary</strong>: Output configuration summary before action</li>
+      <li><strong>ShowTargetDirs</strong>: Display list of directories being scanned</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Behavior</h2>
+    <ul>
+      <li><strong>All Mode</strong>: Closes all active SMB sessions</li>
+      <li><strong>Targets Mode</strong>: Closes sessions for users in <code>IncludeUsers</code> only</li>
+      <li><strong>ScanOnly Mode</strong>: Reports sessions, no actions taken</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Use <code>ScanOnly</code> in development to validate config safely</li>
+      <li>Always enable <code>EnableLog</code> for audit tracking</li>
+      <li>Explicitly define both <code>IncludeUsers</code> and <code>ExcludeUsers</code> for precise targeting</li>
+      <li>Verify the config path and expected modules before running in production</li>
+    </ul>
+  </section>
+
+</body>
+</html>

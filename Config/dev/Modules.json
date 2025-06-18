@@ -1,0 +1,24 @@
+{
+    "DestinationRoot": "C:\\Program Files\\WindowsPowerShell\\Modules",
+    "AlwaysReinstall": true,
+    "ShowOutput": true,
+    "Modules": [
+      {
+        "Name": "LockSentry.Core",
+        "SourcePath": "Modules\\Core"
+      },
+      {
+        "Name": "LockSentry.LogManager",
+        "SourcePath": "Modules\\LogManager"
+      },
+      {
+        "Name": "LockSentry.SmbFileManager",
+        "SourcePath": "Modules\\SmbFileManager"
+      },
+      {
+        "Name": "LockSentry.SmbSessionManager",
+        "SourcePath": "Modules\\SmbSessionManager"
+      }
+    ]
+  }
+  

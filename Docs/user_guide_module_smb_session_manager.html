@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smb Session Manager Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2rem; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>LockSentry - SmbSessionManager Module Guide</h1>
+
+  <section>
+    <h2>Purpose</h2>
+    <p>The <strong>SmbSessionManager</strong> module provides tools for discovering, displaying, and optionally closing SMB sessions. It helps administrators monitor and clean up active network sessions that may lock resources, with advanced configuration for filtering and logging.</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>To execute the full session management workflow:</p>
+    <pre>Invoke-SmbSessionProcess -ConfigFile ".\Config\dev\SmbSessions.json"</pre>
+    <p>This command will:</p>
+    <ul>
+      <li>Load session scanning configuration from JSON</li>
+      <li>Optionally show config summaries and targeted paths</li>
+      <li>Scan SMB open handles and group by sessions</li>
+      <li>Display and optionally close sessions based on user filters and flags</li>
+      <li>Log all relevant actions if enabled</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Exported Functions</h2>
+    <ul>
+      <li><code>Show-SessionConfigSummary</code> – Prints configuration summary for session scanning</li>
+      <li><code>Get-SmbOpenHandles</code> – Gets file handles associated with SMB sessions</li>
+      <li><code>Show-Sessions</code> – Lists current SMB sessions in table format</li>
+      <li><code>Show-SmbSessionGroups</code> – Groups open handles by session and prints them</li>
+      <li><code>Close-AllSessions</code> – Force closes all provided session IDs</li>
+      <li><code>Close-TargetSessions</code> – Closes only sessions matching include/exclude filters</li>
+      <li><code>Invoke-SmbSessionProcess</code> – Orchestrates the session handling logic</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuration Reference</h2>
+    <p>Example structure for <code>SmbSessions.json</code>:</p>
+    <pre>{
+  "DirectoriesToScan": [
+    "D:\\CPRS\\DEV\\LIST",
+    "D:\\CPRS\\DEV\\DATA",
+    "D:\\CPRS\\DEV\\LOGS\\SASLOGS",
+    "D:\\CPRS\\DEV\\DATA\\CEDATA\\CEINVENT"
+  ],
+  "Mode": "Targets",
+  "CloseSession": false,
+  "IncludeUsers": ["mil00001", "zhang312", "halla001"],
+  "ExcludeUsers": ["mil00001Adm"],
+  "EnableLog": true,
+  "LogDirectory": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs",
+  "UseTimestamp": true,
+  "TimestampResolution": "millisecond",
+  "AppendToExisting": false,
+  "ShowConfigFile": false,
+  "ShowSummary": false,
+  "ShowTargetDirs": true
+}</pre>
+    <p><strong>Configuration Keys:</strong></p>
+    <ul>
+      <li><code>DirectoriesToScan</code>: List of root paths to filter open handles under (mandatory).</li>
+      <li><code>Mode</code>: Defines execution behavior. Values:
+        <ul>
+          <li><code>All</code>: Close all active sessions.</li>
+          <li><code>Targets</code>: Close only sessions for users in <code>IncludeUsers</code>.</li>
+          <li><code>ScanOnly</code>: Show sessions but do not close anything.</li>
+        </ul>
+      </li>
+      <li><code>CloseSession</code>: If true, sessions will be closed based on the selected <code>Mode</code>.</li>
+      <li><code>IncludeUsers</code>: Users whose sessions should be targeted for closure (case-insensitive).</li>
+      <li><code>ExcludeUsers</code>: Users to exclude from closure even if matched in include list.</li>
+      <li><code>EnableLog</code>: Enables logging via Write-Log if true.</li>
+      <li><code>LogDirectory</code>: Path where logs should be written if logging is enabled.</li>
+      <li><code>UseTimestamp</code>: Appends timestamp to log filenames if true.</li>
+      <li><code>TimestampResolution</code>: Either <code>second</code> or <code>millisecond</code> (default: second).</li>
+      <li><code>AppendToExisting</code>: If false, deletes any existing log with the same name.</li>
+      <li><code>ShowConfigFile</code>: Prints config file path in the terminal if true.</li>
+      <li><code>ShowSummary</code>: Prints config summary table using <code>Show-SessionConfigSummary</code>.</li>
+      <li><code>ShowTargetDirs</code>: Prints list of directories being scanned before executing handle scan.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Use <code>ScanOnly</code> mode in development environments to preview actions without modifying sessions.</li>
+      <li>Always enable logging in <code>prod</code> and route logs to centralized directory.</li>
+      <li>Keep the <code>IncludeUsers</code> and <code>ExcludeUsers</code> lists accurate to avoid terminating unintended sessions.</li>
+      <li>Use <code>ShowSummary</code> to visually verify config before executing any session closures.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where It's Used</h2>
+    <ul>
+      <li><code>Manage-SmbSessions.ps1</code> – Main script that invokes this module</li>
+      <li><code>LockSentry-RunPlan.ps1</code> – Calls this module during scheduled cleanup or ad-hoc review</li>
+    </ul>
+  </section>
+
+</body>
+</html>

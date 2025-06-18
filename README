@@ -1,0 +1,101 @@
+LockSentry - SMB Handle and Session Management Framework
+=========================================================
+
+Overview
+--------
+LockSentry is a PowerShell-based toolkit for discovering, reporting, and managing locked SMB file handles and sessions. 
+It supports modular logging, session closure, file handle tracking, and log cleanup with a robust configuration-driven architecture.
+
+Project Structure
+-----------------
+├── Config\
+│   ├── dev\
+│   │   ├── LogCleanup.json
+│   │   ├── Modules.json
+│   │   ├── RunPlan.json
+│   │   ├── SmbFiles.json
+│   │   └── SmbSessions.json
+│   ├── prod\
+│   │   └── (same structure as dev)
+│   └── Environment.json
+
+├── Modules\
+│   ├── Core\
+│   │   ├── Core.psm1 / Core.psd1
+│   ├── LogManager\
+│   │   ├── LogManager.psm1 / LogManager.psd1
+│   ├── SmbFileManager\
+│   │   ├── SmbFileManager.psm1 / SmbFileManager.psd1
+│   └── SmbSessionManager\
+│       ├── SmbSessionManager.psm1 / SmbSessionManager.psd1
+
+├── Scripts
+│   ├── Manage-Modules.ps1
+│   ├── Manage-SmbFiles.ps1
+│   ├── Manage-SmbSessions.ps1
+│   ├── Clean-Logs.ps1
+│   └── LockSentry-RunPlan.ps1
+
+├── Logs\
+│   └── Archive\  (used for log rotation)
+
+├── docs\
+│   ├── user_guide_clean_logs.html
+│   ├── user_guide_manage_modules.html
+│   ├── user_guide_manage_smb_files.html
+│   ├── user_guide_manage_smb_sessions.html
+│   ├── user_guide_module_core.html
+│   ├── user_guide_module_log_manager.html
+│   ├── user_guide_module_smb_files_manager.html
+│   ├── user_guide_module_smb_session_manager.html
+│   └── user_guide_run_plan.html
+
+Features
+--------
+- SMB file handle scanning and cleanup
+- SMB session discovery and targeted closure
+- Per-environment configuration support (dev/prod)
+- Configurable logging, archiving, and retention
+- Modular PowerShell architecture
+- Centralized run plan for automation
+
+How to Use
+----------
+1. Configure your environment using `Config\Environment.json`:
+   {
+     "CurrentEnv": "dev"
+   }
+
+2. Run the master execution plan:
+   .\LockSentry-RunPlan.ps1
+
+3. Use individual scripts for ad hoc control:
+   .\Manage-SmbFiles.ps1 -EnvName dev
+   .\Manage-SmbSessions.ps1 -EnvName prod
+   .\Clean-Logs.ps1 -Environment dev -PurgeLogs
+
+4. Install or re-register modules:
+   .\Manage-Modules.ps1 -Environment dev -Install
+
+Git Setup
+---------
+To initialize the repository:
+
+   git init
+   git remote add origin https://github.com/leon-mil/LockSentry.git
+   git add .
+   git commit -m "Initial commit"
+   git push -u origin main
+
+.gitignore (recommended):
+-------------------------
+.vscode/
+Logs/
+*.log
+*.zip
+*.bak
+
+Author
+------
+Leon Mil  
+June 2025

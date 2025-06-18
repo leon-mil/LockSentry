@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LockSentry - Master User Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; color: #333; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 4px; font-size: 90%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2rem; }
+    ul { margin-left: 1.5rem; }
+    a { color: #003366; text-decoration: underline; }
+    hr { border: 0; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+  <h1>LockSentry - Master User Guide</h1>
+
+  <section>
+    <h2>Overview</h2>
+    <p>
+      LockSentry is a modular PowerShell-based automation system for managing SMB file handles and sessions.
+      This guide provides a comprehensive explanation of how to configure, execute, and extend each component of the system.
+    </p>
+  </section>
+
+  <section>
+    <h2>Core Execution Scripts</h2>
+    <ul>
+      <li><a href="user_guide_run_plan.html">LockSentry-RunPlan.ps1</a> – Main orchestrator for all execution steps defined in RunPlan.json.</li>
+      <li><a href="user_guide_manage_modules.html">Manage-Modules.ps1</a> – Installs, removes, or lists PowerShell modules based on Modules.json.</li>
+      <li><a href="user_guide_clean_logs.html">Clean-Logs.ps1</a> – Archives and purges logs based on age and configuration settings.</li>
+      <li><a href="user_guide_manage_smb_files.html">Manage-SmbFiles.ps1</a> – Executes SMB file handle scanning and cleanup via SmbFileManager.</li>
+      <li><a href="user_guide_manage_smb_sessions.html">Manage-SmbSessions.ps1</a> – Executes SMB session filtering and closure via SmbSessionManager.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Modules</h2>
+    <ul>
+      <li><a href="user_guide_module_core.html">LockSentry.Core</a> – Common utilities including config loading and formatting.</li>
+      <li><a href="user_guide_module_log_manager.html">LockSentry.LogManager</a> – Logging support for timestamped output and file writing.</li>
+      <li><a href="user_guide_module_smb_files_manager.html">LockSentry.SmbFileManager</a> – Detects, displays, and optionally closes open SMB file handles.</li>
+      <li><a href="user_guide_module_smb_session_manager.html">LockSentry.SmbSessionManager</a> – Analyzes and optionally closes SMB sessions based on filters.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuration Files</h2>
+    <p>Each environment (<code>dev</code> or <code>prod</code>) contains the following files:</p>
+    <ul>
+      <li><strong>Environment.json</strong> – Specifies the active environment via <code>CurrentEnv</code>.</li>
+      <li><strong>RunPlan.json</strong> – Array of steps to run, where each step includes a script name and a repeat count (Times).</li>
+      <li><strong>Modules.json</strong> – Module list with source paths and names for installation.</li>
+      <li><strong>LogCleanup.json</strong> – Controls archiving and deletion logic (e.g., <code>ArchiveAfter</code>, <code>DeleteAfter</code>).</li>
+      <li><strong>SmbFiles.json</strong> – Controls file handle scan settings: directories to scan, log behavior, mode, and user filters.</li>
+      <li><strong>SmbSessions.json</strong> – Controls session scan behavior including mode, logging, and user inclusion/exclusion.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Workflow and Execution Order</h2>
+    <p>
+      <strong>LockSentry-RunPlan.ps1</strong> acts as the main task runner. It:
+    </p>
+    <ol>
+      <li>Determines environment using Environment.json</li>
+      <li>Performs log cleanup using Clean-Logs.ps1 and LogCleanup.json</li>
+      <li>Installs modules using Manage-Modules.ps1 and Modules.json</li>
+      <li>Loads and executes each step in RunPlan.json using the appropriate config:</li>
+      <ul>
+        <li><code>Manage-SmbFiles.ps1</code> → SmbFiles.json</li>
+        <li><code>Manage-SmbSessions.ps1</code> → SmbSessions.json</li>
+      </ul>
+    </ol>
+    <p>
+      Each step may be repeated using the <code>Times</code> value in RunPlan.json.
+    </p>
+  </section>
+
+  <section>
+    <h2>Common Configuration Options</h2>
+    <p>These config settings apply across various scripts:</p>
+    <ul>
+      <li><code>EnableLog</code> – Enables logging to disk.</li>
+      <li><code>LogDirectory</code> – Where logs are stored.</li>
+      <li><code>UseTimestamp</code> – Whether to append timestamps to log filenames.</li>
+      <li><code>TimestampResolution</code> – Format granularity for timestamps.</li>
+      <li><code>AppendToExisting</code> – Append vs overwrite log files.</li>
+      <li><code>Mode</code> – <code>All</code>, <code>Targets</code>, or <code>ScanOnly</code>.</li>
+      <li><code>IncludeUsers</code> / <code>ExcludeUsers</code> – Control which user sessions or file handles are processed.</li>
+      <li><code>DirectoriesToScan</code> – Folder paths where SMB scans should be performed.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Directory Layout</h2>
+    <pre>
+📁 LockSentry
+├── 📁 Config
+│   ├── 📁 dev / 📁 prod
+│   │   ├── Environment.json
+│   │   ├── LogCleanup.json
+│   │   ├── Modules.json
+│   │   ├── RunPlan.json
+│   │   ├── SmbFiles.json
+│   │   └── SmbSessions.json
+├── 📁 Modules
+│   ├── Core, LogManager, SmbFileManager, SmbSessionManager
+├── 📁 docs
+│   ├── user_guide_*.html (see above links)
+├── Clean-Logs.ps1
+├── LockSentry-RunPlan.ps1
+├── Manage-Modules.ps1
+├── Manage-SmbFiles.ps1
+├── Manage-SmbSessions.ps1
+    </pre>
+  </section>
+
+  <section>
+    <h2>See Also</h2>
+    <ul>
+      <li><a href="user_guide_clean_logs.html">Clean-Logs.ps1</a></li>
+      <li><a href="user_guide_manage_modules.html">Manage-Modules.ps1</a></li>
+      <li><a href="user_guide_manage_smb_files.html">Manage-SmbFiles.ps1</a></li>
+      <li><a href="user_guide_manage_smb_sessions.html">Manage-SmbSessions.ps1</a></li>
+      <li><a href="user_guide_module_core.html">LockSentry.Core</a></li>
+      <li><a href="user_guide_module_log_manager.html">LockSentry.LogManager</a></li>
+      <li><a href="user_guide_module_smb_files_manager.html">LockSentry.SmbFileManager</a></li>
+      <li><a href="user_guide_module_smb_session_manager.html">LockSentry.SmbSessionManager</a></li>
+      <li><a href="user_guide_run_plan.html">LockSentry-RunPlan.ps1</a></li>
+    </ul>
+  </section>
+
+</body>
+</html>

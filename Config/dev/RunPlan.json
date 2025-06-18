@@ -1,0 +1,21 @@
+{
+    "ExecutionPlan": [
+      {
+        "Script": "Manage-SmbFiles.ps1",
+        "Times": 1
+      },
+      {
+        "Script": "Manage-SmbSessions.ps1",
+        "Times": 1
+      },
+      {
+        "Script": "Manage-SmbFiles.ps1",
+        "Times": 1
+      },
+      {
+        "Script": "Manage-SmbSessions.ps1",
+        "Times": 1
+      }
+    ]
+}
+  

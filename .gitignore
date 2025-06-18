@@ -1,0 +1,24 @@
+# Ignore VSCode workspace settings
+.vscode/
+*.code-workspace
+
+# Ignore logs and archives
+Logs/
+Logs/Archive/
+
+# Ignore compiled PowerShell module output (if any)
+*.ps1xml
+*.psd1~
+*.psm1~
+
+# Ignore OS junk
+Thumbs.db
+.DS_Store
+
+# Ignore environment-specific config (optional)
+Config/*/Environment.json
+
+# Ignore sensitive/temporary files
+*.bak
+*.tmp
+*.log

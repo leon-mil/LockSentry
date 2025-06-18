@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogManager Module - User Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; color: #333; line-height: 1.6; }
+    h1, h2, h3 { color: #003366; }
+    code { background-color: #f4f4f4; padding: 2px 5px; font-size: 95%; }
+    pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
+    section { margin-bottom: 2.5rem; }
+    hr { border: none; border-top: 1px solid #ccc; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>LockSentry LogManager Module - User Guide</h1>
+
+  <section>
+    <h2>Overview</h2>
+    <p>The <strong>LogManager</strong> module provides structured logging capabilities for LockSentry modules and automation scripts. It supports dynamic log file creation, timestamping, and log level formatting.</p>
+  </section>
+
+  <section>
+    <h2>Usage Context</h2>
+    <p>This module is typically used in the following files:</p>
+    <ul>
+      <li><code>LockSentry-RunPlan.ps1</code></li>
+      <li><code>Manage-SmbFiles.ps1</code></li>
+      <li><code>Manage-SmbSessions.ps1</code></li>
+      <li>Any module needing centralized logging (e.g., <code>SmbFileManager.psm1</code>, <code>SmbSessionManager.psm1</code>)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Exported Functions</h2>
+
+    <h3>1. <code>Initialize-Log</code></h3>
+    <p>Creates or prepares a log file based on the given parameters. It sets the path globally using <code>$Global:LS_LogFilePath</code>.</p>
+    <h4>Parameters:</h4>
+    <ul>
+      <li><code>BasePath</code> (string, mandatory): Directory where the log file will be saved.</li>
+      <li><code>BaseName</code> (string, mandatory): Prefix name of the log file.</li>
+      <li><code>UseTimestamp</code> (switch): Appends a timestamp to the log filename.</li>
+      <li><code>TimestampResolution</code> (string): Can be <code>second</code> or <code>millisecond</code>.</li>
+      <li><code>AppendToExisting</code> (switch): Prevents deletion of existing log files if they exist.</li>
+    </ul>
+
+    <h4>Examples:</h4>
+    <pre>Initialize-Log -BasePath "D:\Logs" -BaseName "SessionLog" -UseTimestamp</pre>
+    <pre>Initialize-Log -BasePath "C:\LogDir" -BaseName "MyTask" -TimestampResolution millisecond -AppendToExisting</pre>
+
+    <hr>
+
+    <h3>2. <code>Write-Log</code></h3>
+    <p>Writes a message to the initialized log file with the specified log level.</p>
+
+    <h4>Parameters:</h4>
+    <ul>
+      <li><code>Message</code> (string, mandatory): Log message to write.</li>
+      <li><code>Level</code> (string): Log severity. Valid options: <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>DEBUG</code>. Defaults to <code>INFO</code>.</li>
+    </ul>
+
+    <h4>Examples:</h4>
+    <pre>Write-Log -Message "Lock scan started."</pre>
+    <pre>Write-Log -Message "Unexpected configuration value" -Level WARN</pre>
+    <pre>Write-Log -Message "Script terminated unexpectedly." -Level ERROR</pre>
+
+    <p><strong>Note:</strong> <code>Initialize-Log</code> must be called before <code>Write-Log</code> or an exception will be thrown.</p>
+  </section>
+
+  <section>
+    <h2>Recommendations</h2>
+    <ul>
+      <li>Call <code>Initialize-Log</code> only once per script execution unless explicitly rotating files.</li>
+      <li>Set the log path to a known writable location like <code>Logs/</code> or <code>Logs/Archive/</code>.</li>
+      <li>Use consistent log levels across scripts to simplify parsing and diagnostics.</li>
+      <li>Use <code>UseTimestamp</code> in automation pipelines to avoid overwriting logs.</li>
+      <li>Wrap <code>Write-Log</code> calls in try/catch where appropriate for resilience.</li>
+    </ul>
+  </section>
+
+</body>
+</html>
