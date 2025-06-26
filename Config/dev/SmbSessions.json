@@ -16,7 +16,7 @@
       "mil00001Adm"
     ],
     "EnableLog": true,
-    "LogDirectory": "D:\\CPRS\\DEV\\SCRIPTS\\LockSentry\\Logs",
+    "LogDirectory": "D:\\CPRS\\DEV\\Utilities\\LockSentry\\Logs",
     "UseTimestamp": true,
     "TimestampResolution": "millisecond",
     "AppendToExisting": false,

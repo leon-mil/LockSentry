@@ -1,6 +1,6 @@
 {
-    "LogFolder":        "D:\\CPRS\\PROD\\SCRIPTS\\LockSentry\\Logs",
-    "ArchiveFolder":    "D:\\CPRS\\PROD\\SCRIPTS\\LockSentry\\Logs\\Archive",
+    "LogFolder":        "D:\\CPRS\\PROD\\Utilities\\LockSentry\\Logs",
+    "ArchiveFolder":    "D:\\CPRS\\PROD\\Utilities\\LockSentry\\Logs\\Archive",
     "EnableCleanup":    true,
     "FilePatterns":     [
       "*.txt",
